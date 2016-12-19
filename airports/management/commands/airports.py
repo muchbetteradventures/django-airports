@@ -57,7 +57,7 @@ class Command(BaseCommand):
                 importer.start(f)
 
     def download(self, filename='airports.dat'):
-        logger.info("Downloading: " + filename)        
+        logger.info("Downloading: " + filename)
         response = requests.post(ENDPOINT_URL, data={})
 
         if response.status_code != 200:
@@ -118,7 +118,7 @@ class DataImporter(object):
                     continue  # already saved
 
                 country = self.get_country(row[columns['country_name']], row)
-                if not bool(country): 
+                if not bool(country):
                     logger.warning("Airport: %s: Cannot find country: %s -- skipping",
                         row[columns['name']], row[columns['country_name']])
                     continue  # unable to get related country
@@ -151,7 +151,7 @@ class DataImporter(object):
         qs = Country.objects.all()
 
         try:
-            c = qs.get(Q(name__iexact=name) | Q(alt_names__name__iexact=name))  # first attempt
+            c = qs.get(Q(name__iexact=name) | Q(alt_names_en__name__iexact=name))  # first attempt
         except (Country.DoesNotExist, MultipleObjectsReturned):
             try:
                 c = qs.filter(city__in=City.objects.filter(
@@ -173,7 +173,7 @@ class DataImporter(object):
         qs = City.objects.distance(point).filter(country=country)
 
         try:
-            c = qs.get(Q(name_std__iexact=name) | Q(name__iexact=name) | Q(alt_names__name__iexact=name))
+            c = qs.get(Q(name_std__iexact=name) | Q(name__iexact=name) | Q(alt_names_en__name__iexact=name))
         except (City.DoesNotExist, MultipleObjectsReturned):
             try:
                 c = qs.exclude(
